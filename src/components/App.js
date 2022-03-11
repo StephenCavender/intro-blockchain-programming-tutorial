@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import logo from '../logo.png';
+import Marketplace from '../abis/Marketplace.json'
+import Web3 from 'web3';
 import './App.css';
 
 class App extends Component {
@@ -22,6 +24,22 @@ class App extends Component {
     if (window.ethereum) {
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts'})
       this.setState({ account: accounts[0] })
+
+      const web3 = new Web3(window.ethereum)
+      const networkId = await web3.eth.net.getId()
+      // console.log(networkId)
+
+      const networkData = Marketplace.networks[networkId]
+      if (networkData) {
+        // console.log(Marketplace.abi, Marketplace.networks[5777].address);
+        // const address = Marketplace.networks[networkId].address
+        const marketplace = web3.eth.Contract(Marketplace.abi, networkData.address)
+        // console.log(marketplace)
+      } else {
+        alert("Marketplace contract not deployed to the detected network")
+      }
+
+      
     }
     // Old way of loading account data
     // const web3 = window.web3
@@ -33,7 +51,10 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      account: ''
+      account: '',
+      productCount: 0,
+      products: [],
+      loading: true
     }
   }
 
