@@ -3,6 +3,40 @@ import logo from '../logo.png';
 import './App.css';
 
 class App extends Component {
+
+  async componentDidMount() {
+    // await this.loadWeb3()
+    // console.log(window.web3)
+    await this.loadBlockchainData()
+  }
+
+  // Old way of loading web3
+  // async loadWeb3() {
+  //   if (window.ethereum) {
+  //     await window.ethereum.request({ method: 'eth_requestAccounts'})
+  //     window.web3 = new Web3(window.ethereum)
+  //   }
+  // }
+
+  async loadBlockchainData() {
+    if (window.ethereum) {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts'})
+      this.setState({ account: accounts[0] })
+    }
+    // Old way of loading account data
+    // const web3 = window.web3
+    // const accounts = await web3.eth.getAccounts()
+    // // console.log(accounts)
+    // this.setState({ account: accounts[0] })
+  }
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      account: ''
+    }
+  }
+
   render() {
     return (
       <div>
@@ -13,8 +47,13 @@ class App extends Component {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Dapp University
+            Steve's Marketplace
           </a>
+          <ul className="navbar-nav px-3">
+            <li className="nav-item text-nowrap d-none d-sm-none d-sm-block">
+              <small className="text-white"><span id="account">{this.state.account}</span></small>
+            </li>
+          </ul>
         </nav>
         <div className="container-fluid mt-5">
           <div className="row">
