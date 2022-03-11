@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
+// import Web3 from 'web3';
 
 class Main extends Component {
+  // web3 = new Web3()
+
   render() {
     return (
       <div id="content">
@@ -8,7 +11,7 @@ class Main extends Component {
         <form onSubmit={(event) => {
           event.preventDefault()
           const name = this.productName.value
-          // const price = window.web3.utils.toWei(this.productPrice.value.toString(), 'Ether')
+          // const price = this.web3.utils.toWei(this.productPrice.value.toString(), 'Ether')
           const price = String(this.productPrice.value * 10 ** 18)
           this.props.createProduct(name, price)
         }}>
@@ -45,27 +48,27 @@ class Main extends Component {
             </tr>
           </thead>
           <tbody id="productList">
-            <tr>
-              <th scope="row">1</th>
-              <td>iPhone x</td>
-              <td>1 Eth</td>
-              <td>0x39C7BC5496f4eaaa1fF75d88E079C22f0519E7b9</td>
-              <td><button className="buyButton">Buy</button></td>
-            </tr>
-            <tr>
-              <th scope="row">2</th>
-              <td>Macbook Pro</td>
-              <td>3 eth</td>
-              <td>0x39C7BC5496f4eaaa1fF75d88E079C22f0519E7b9</td>
-              <td><button className="buyButton">Buy</button></td>
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>Airpods</td>
-              <td>0.5 eth</td>
-              <td>0x39C7BC5496f4eaaa1fF75d88E079C22f0519E7b9</td>
-              <td><button className="buyButton">Buy</button></td>
-            </tr>
+            { this.props.products.map((product, key) => {
+              const isOwner = product.owner.toLowerCase() === this.props.account.toLowerCase()
+
+              return(
+                <tr key={key}>
+                  <th scope="row">{product.id.toString()}</th>
+                  <td>{product.name}</td>
+                  {/* <td>{this.web3.utils.fromWei(product.price.toString(), 'Ether')} Eth</td> */}
+                  <td>{product.price / (10 ** 18)} Eth</td>
+                  <td>{product.owner}{isOwner && " (YOU!)"}</td>
+                  <td>
+                    { product.purchased || isOwner
+                      ? null
+                      : <button
+                        className='btn btn-secondary'
+                        onClick={() => this.props.purchaseProduct(product.id, product.price)}>Buy</button>
+                    }
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>
